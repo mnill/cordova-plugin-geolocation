@@ -118,14 +118,12 @@
     
 #ifdef __IPHONE_8_0
     NSUInteger code = [CLLocationManager authorizationStatus];
-    if (code == kCLAuthorizationStatusNotDetermined && ([self.locationManager respondsToSelector:@selector(requestAlwaysAuthorization)] || [self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)])) { //iOS8+
+    if (code == kCLAuthorizationStatusNotDetermined && [self.locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) { //iOS8+
         __highAccuracyEnabled = enableHighAccuracy;
-        if([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"]){
-            [self.locationManager requestWhenInUseAuthorization];
-        } else if([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"]) {
+        if([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"]) {
             [self.locationManager  requestAlwaysAuthorization];
         } else {
-            NSLog(@"[Warning] No NSLocationAlwaysUsageDescription or NSLocationWhenInUseUsageDescription key is defined in the Info.plist file.");
+            NSLog(@"[Warning] No NSLocationAlwaysUsageDescription key is defined in the Info.plist file.");
         }
         return;
     }
@@ -141,7 +139,8 @@
         __highAccuracyEnabled = YES;
         // Set distance filter to 5 for a high accuracy. Setting it to "kCLDistanceFilterNone" could provide a
         // higher accuracy, but it's also just spamming the callback with useless reports which drain the battery.
-        self.locationManager.distanceFilter = 5;
+        self.locationManager.distanceFilter = 1;
+        self.locationManager.pausesLocationUpdatesAutomatically = NO;
         // Set desired accuracy to Best.
         self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     } else {
